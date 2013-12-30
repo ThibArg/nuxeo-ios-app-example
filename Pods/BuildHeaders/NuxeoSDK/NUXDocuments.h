@@ -1,0 +1,1 @@
+../../NuxeoSDK/NuxeoSDK/NuxeoSDK/Classes/Entity/NUXDocuments.h

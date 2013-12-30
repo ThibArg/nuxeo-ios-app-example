@@ -1,0 +1,1 @@
+PODS_NUXEOSDK_OTHER_LDFLAGS = -framework Foundation

@@ -1,0 +1,1 @@
+../../NuxeoSDK/NuxeoSDK/NuxeoSDK/Classes/Parser/NUXJSONMapper.h

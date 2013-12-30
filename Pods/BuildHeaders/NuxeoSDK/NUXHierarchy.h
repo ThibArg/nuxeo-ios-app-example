@@ -1,0 +1,1 @@
+../../NuxeoSDK/NuxeoSDK/NuxeoSDK/Classes/Hierarchy/NUXHierarchy.h
