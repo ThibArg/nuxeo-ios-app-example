@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "NUXDocument+nxuNUXDocument.h"
+#import "NUXDocuments+nxuNUXDocuments.h"
 
 @interface NBADetailViewController : UIViewController
 
-@property (strong, nonatomic) NUXDocument * currentDoc;
+- (void) displayDetails:(NUXDocument *)newDoc
+				forList: (NSArray *) list;
 
 @end

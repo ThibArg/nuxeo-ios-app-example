@@ -9,34 +9,99 @@
 #import "NBADetailViewController.h"
 
 @interface NBADetailViewController ()
-- (void)configureView;
+
+@property (strong, nonatomic) NUXDocument * currentDoc;
+@property (strong, nonatomic) NSArray * docList;
+@property NSUInteger indexCurrent;
+@property NSUInteger indexMax;
 
 @property (weak, nonatomic) IBOutlet UILabel *lb_title;
 @property (weak, nonatomic) IBOutlet UILabel *lb_created;
 @property (weak, nonatomic) IBOutlet UILabel *lb_createdBy;
 @property (weak, nonatomic) IBOutlet UILabel *lb_modified;
 @property (weak, nonatomic) IBOutlet UILabel *lb_modifiedBy;
+@property (weak, nonatomic) IBOutlet UIButton *bNext;
+@property (weak, nonatomic) IBOutlet UIButton *bPrevious;
+
+- (void) configureView;
+- (void) goToNext;
+- (void) goToPrevious;
+- (void) updateInterface;
 
 @end
 
 @implementation NBADetailViewController
 
-#pragma mark - Managing the detail item
-
-- (void)setCurrentDoc:(NUXDocument *)newDoc
+// This is the only public interface
+- (void)displayDetails:(NUXDocument *)newDoc
+			   forList: (NSArray *) list
 {
-    if (_currentDoc != newDoc) {
-        _currentDoc = newDoc;
-        
-        // Update the view.
-        [self configureView];
-    }
+    _currentDoc = newDoc;
+	_docList = list;
+	
+	[self updateIndex];
+	[self configureView];
+}
+
+- (void) updateIndex
+{
+	if(_currentDoc && _docList) {
+		_indexCurrent = [_docList indexOfObject:_currentDoc];
+		_indexMax = [_docList count] - 1;
+	} else {
+		_indexCurrent = NSNotFound;
+		_indexMax = 0;
+	}
+}
+
+- (IBAction)handleClick:(id)sender {
+	if(sender == self.bNext) {
+		[self goToNext];
+	} else {
+		[self goToPrevious];
+	}
+}
+
+- (void) goToNext
+{
+	if(_indexCurrent < _indexMax) {
+		_indexCurrent += 1;
+	}
+	[self displayDocument:[_docList objectAtIndex:_indexCurrent]];
+	
+}
+
+- (void) goToPrevious
+{
+	if(_indexCurrent > 0) {
+		_indexCurrent -= 1;
+	}
+	[self displayDocument:[_docList objectAtIndex:_indexCurrent]];
+}
+
+- (void) updateInterface
+{
+	self.bPrevious.enabled = YES;
+	self.bNext.enabled = YES;
+	
+	if(!self.currentDoc || _indexCurrent == NSNotFound) {
+		self.bNext.enabled = NO;
+		self.bPrevious.enabled = NO;
+	} else if(_indexCurrent == 0) {
+		self.bPrevious.enabled = NO;
+	} else if(_indexCurrent == _indexMax) {
+		self.bNext.enabled = NO;
+	}
+}
+
+- (void) displayDocument: (NUXDocument *) doc
+{
+	_currentDoc = doc;
+	[self configureView];
 }
 
 - (void)configureView
 {
-    // Update the user interface for the detail item.
-	//NSLog(@"%@", self.currentDoc);
 	if (self.currentDoc) {
 		self.lb_title.text = self.currentDoc.title;
 		
@@ -45,13 +110,24 @@
 		self.lb_createdBy.text = props[kDCCreator];
 		self.lb_modified.text = props[kDCModified];
 		self.lb_modifiedBy.text = props[kDCLastContributor];
+	} else {
+		self.lb_title.text = @"";
+		self.lb_created.text = @"";
+		self.lb_createdBy.text = @"";
+		self.lb_modified.text = @"";
+		self.lb_modifiedBy.text = @"";
 	}
+	[self updateInterface];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+
+	[self updateIndex];
+	
+	NSLog(@"%@ -> %d", @"viewDidLoad",_indexCurrent);
+
 	[self configureView];
 }
 

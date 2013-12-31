@@ -25,6 +25,7 @@
 
 @implementation NBAMasterViewController
 
+#pragma mark - Query
 - (void) performQuery:(NSString*) queryStr
 {
 	//NSLog(@"ICI REFRESH");
@@ -84,6 +85,7 @@
 	[self performQuery:@"SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain' and ecm:mixinType != 'Folderish'"];
 }
 
+#pragma mark - Usual
 - (void)awakeFromNib
 {
     [super awakeFromNib];
@@ -94,16 +96,19 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-	self.navigationItem.leftBarButtonItem = self.editButtonItem;
 
-	/* PAS DE ADD BUTTON
-	UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
-	self.navigationItem.rightBarButtonItem = addButton;
-	 */
+	self.navigationItem.leftBarButtonItem = self.editButtonItem;
+	
 	[searchBar setDelegate:self];
 }
 
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Add object(s)
 - (void) insertNewObjectsWithArray:(NSArray *)array andResetAll:(BOOL) needsReset
 {
 	if(needsReset) {
@@ -125,18 +130,18 @@
 - (void) insertNewObject:(NUXDocument *) doc
 {
 	//[_objects insertObject:[NSDate date] atIndex:0];
-	[_objects insertObject:[doc title] atIndex:0];
+	[_objects insertObject:doc atIndex:0];
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
 	[self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 #pragma mark - Table View
+
+// Later: better table view, not only the titles, but also icons, etc.
+- (void) setupCell: (UITableViewCell *)cell forDoc: (NUXDocument *) doc
+{
+	cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", doc.type, doc.title];
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -151,9 +156,10 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+	
+	[self setupCell:cell
+			 forDoc:_objects[indexPath.row]];
 
-	NSDate *object = _objects[indexPath.row];
-	cell.textLabel.text = [object description];
     return cell;
 }
 
@@ -195,7 +201,8 @@
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
 
-        [ [segue destinationViewController] setCurrentDoc:_objects[indexPath.row] ];
+        [ [segue destinationViewController] displayDetails:_objects[indexPath.row]
+												   forList:_objects ];
     }
 }
 

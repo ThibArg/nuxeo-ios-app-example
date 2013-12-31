@@ -16,9 +16,14 @@ NSString* const kDCLastContributor = @"dc:lastContributor";
 
 @implementation NUXDocument (nxuNUXDocument)
 
-- (NSString *) description
+- (BOOL) isEqual:(id)object
 {
-	return [NSString stringWithFormat:@"hop: %@", [self title]];
+	if(object && [object isKindOfClass:[NUXDocument class]]) {
+		return [self.uid isEqualToString:[(NUXDocument *)object uid]]
+			&& [self.changeToken isEqualToString:[(NUXDocument *)object changeToken]];
+	}
+	
+	return NO;
 }
 
 @end
