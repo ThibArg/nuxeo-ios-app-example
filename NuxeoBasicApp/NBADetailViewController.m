@@ -10,16 +10,23 @@
 
 @interface NBADetailViewController ()
 - (void)configureView;
+
+@property (weak, nonatomic) IBOutlet UILabel *lb_title;
+@property (weak, nonatomic) IBOutlet UILabel *lb_created;
+@property (weak, nonatomic) IBOutlet UILabel *lb_createdBy;
+@property (weak, nonatomic) IBOutlet UILabel *lb_modified;
+@property (weak, nonatomic) IBOutlet UILabel *lb_modifiedBy;
+
 @end
 
 @implementation NBADetailViewController
 
 #pragma mark - Managing the detail item
 
-- (void)setDetailItem:(id)newDetailItem
+- (void)setCurrentDoc:(NUXDocument *)newDoc
 {
-    if (_detailItem != newDetailItem) {
-        _detailItem = newDetailItem;
+    if (_currentDoc != newDoc) {
+        _currentDoc = newDoc;
         
         // Update the view.
         [self configureView];
@@ -29,9 +36,15 @@
 - (void)configureView
 {
     // Update the user interface for the detail item.
-
-	if (self.detailItem) {
-	    self.detailDescriptionLabel.text = [self.detailItem description];
+	//NSLog(@"%@", self.currentDoc);
+	if (self.currentDoc) {
+		self.lb_title.text = self.currentDoc.title;
+		
+		NSDictionary *props = self.currentDoc.properties;
+		self.lb_created.text = props[kDCCreated];
+		self.lb_createdBy.text = props[kDCCreator];
+		self.lb_modified.text = props[kDCModified];
+		self.lb_modifiedBy.text = props[kDCLastContributor];
 	}
 }
 

@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NUXDocument+nxuNUXDocument.h"
 
 @interface NBADetailViewController : UIViewController
 
-@property (strong, nonatomic) id detailItem;
+@property (strong, nonatomic) NUXDocument * currentDoc;
 
-@property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
 @end

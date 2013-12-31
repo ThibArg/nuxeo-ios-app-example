@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NBAMasterViewController : UITableViewController
+@interface NBAMasterViewController : UITableViewController <UISearchBarDelegate>
 
 @end

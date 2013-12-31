@@ -19,13 +19,15 @@
 
 @interface NBAMasterViewController () {
     NSMutableArray *_objects;
+	__weak IBOutlet UISearchBar *searchBar;
 }
 @end
 
 @implementation NBAMasterViewController
 
-- (IBAction)refreshList:(id)sender {
-	NSLog(@"ICI REFRESH");
+- (void) performQuery:(NSString*) queryStr
+{
+	//NSLog(@"ICI REFRESH");
 	
 	NSURL *url = [[NSURL alloc] initWithString:@"http://localhost:8080/nuxeo"];
 	NUXSession *session = [[NUXSession alloc] initWithServerURL:url username:@"Administrator" password:@"Administrator"];
@@ -34,11 +36,12 @@
 	
 	NUXRequest *request = [[NUXRequest alloc] initWithSession:session];
 	
-	request = [session requestQuery: @"SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain' and ecm:mixinType != 'Folderish'"];
+	request = [session requestQuery: queryStr];
 	
+	// ================================= handleResult
 	void (^handleResult)(NUXRequest *) = ^(NUXRequest *inRequest) {
 		NSError *error;
-				
+		
 		NUXDocuments * docs = [inRequest responseEntityWithError:&error];
 		if(error) {
 			NSLog(@"Error in [inRequest responseEntityWithError:&error]: %@", error);
@@ -47,38 +50,14 @@
 								andResetAll: YES];
 			
 		}
-		
-//		NSError *error;
-//		//NUXDocument *doc = [request responseEntityWithError:&error];
-//		//[self doSomethingGreatWith:doc];
-//		NSDictionary *response = [request responseJSONWithError:&error];
-//		if(error) {
-//			NSLog(@"Error parsing the JSON data: %@", error);
-//		} else {
-//			//[self insertDebugString:[NSString stringWithFormat:@"Status: %d", [request responseStatusCode]]];
-//			// Check we have Documents
-//			NSString *entityType = [response valueForKey:@"entity-type"];
-//			
-//						
-//			//if(s is)
-//			if(![entityType isEqualToString:@"documents"]) {
-//				NSLog(@"Was expecting to receive <documents>, but received <%@>", entityType);
-//			} else {
-//				NSArray *docs = [response valueForKey:@"entries"];
-//				NSLog(@"COMBIEN: %d", [docs count]);
-//				for(NSArray *oneJSONDoc in docs) {
-//					NSLog(@"%@", [oneJSONDoc valueForKey:@"title"]);
-//					[self insertNewObject:oneJSONDoc];
-//				}
-//			}
-//		}
 	};
 	
+	// ================================= handleFailure
 	void (^handleFailure)(NUXRequest *) = ^(NUXRequest *inRequest) {
 		
 		NSLog(@"Request failed because of:\r        - Status code: %d\r        - Message: %@",
-						[inRequest responseStatusCode],
-						[inRequest responseString]);
+			  [inRequest responseStatusCode],
+			  [inRequest responseString]);
 		
 		// With only the text included in the html of responseString:
 		NSString *html = [inRequest responseString];
@@ -90,19 +69,26 @@
 													  documentAttributes:nil
 																   error:nil];
 		
-		 NSLog(@"%@", [s string]);
-
+		NSLog(@"%@", [s string]);
+		
 	};
 	
 	[request setCompletionBlock:handleResult];
 	[request setFailureBlock:handleFailure];
 	[request start];
+	
+}
+
+- (IBAction)refreshList:(id)sender {
+	
+	[self performQuery:@"SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain' and ecm:mixinType != 'Folderish'"];
 }
 
 - (void)awakeFromNib
 {
     [super awakeFromNib];
 	_objects = [[NSMutableArray alloc] init];
+	
 }
 
 - (void)viewDidLoad
@@ -115,12 +101,13 @@
 	UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
 	self.navigationItem.rightBarButtonItem = addButton;
 	 */
-	
+	[searchBar setDelegate:self];
 }
 
 - (void) insertNewObjectsWithArray:(NSArray *)array andResetAll:(BOOL) needsReset
 {
 	if(needsReset) {
+		NSLog(@"RESET");
 		[_objects removeAllObjects];
 		[self.tableView reloadData];
 	}
@@ -202,13 +189,27 @@
 }
 */
 
+// We are moving to the detail viw => give the current doc
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSDate *object = _objects[indexPath.row];
-        [[segue destinationViewController] setDetailItem:object];
+
+        [ [segue destinationViewController] setCurrentDoc:_objects[indexPath.row] ];
     }
+}
+
+
+#pragma  mark - Search Bar
+- (void) searchBarSearchButtonClicked:(UISearchBar *)theSearchBar
+{
+	[theSearchBar resignFirstResponder];
+	[self performQuery: [theSearchBar text]];
+}
+
+- (void)searchBarBookmarkButtonClicked:(UISearchBar *)searchBar
+{
+	NSLog(@"oiuiouoi");
 }
 
 @end
