@@ -16,34 +16,55 @@
 #import "NUXRequest.h"
 #import "NUXSession+requests.h"
 #import "NUXDocuments+nxuNUXDocuments.h"
+#import "nxuPaginatedDocuments.h"
+
+NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/ws/LotOfDocs'";
 
 @interface NBAMasterViewController () {
-    NSMutableArray *_objects;
+    NSMutableArray	*_objects;
 	__weak IBOutlet UISearchBar *searchBar;
 }
 @end
 
 @implementation NBAMasterViewController
 
+// ==================================================
 #pragma mark - Query
+// ==================================================
 - (void) performQuery:(NSString*) queryStr
 {
 	//NSLog(@"ICI REFRESH");
 	
 	NSURL *url = [[NSURL alloc] initWithString:@"http://localhost:8080/nuxeo"];
 	NUXSession *session = [[NUXSession alloc] initWithServerURL:url username:@"Administrator" password:@"Administrator"];
-	
 	[session addDefaultSchemas:@[@"dublincore"]];
 	
-	NUXRequest *request = [[NUXRequest alloc] initWithSession:session];
 	
-	request = [session requestQuery: queryStr];
+	void (^handleSuccess) (nxuPaginatedDocuments*) = ^(nxuPaginatedDocuments *pagedDocs) {
+		
+	};
+	void (^handleError) (nxuPaginatedDocuments*) = ^(nxuPaginatedDocuments *pagedDocs) {
+		
+	};
+	
+	nxuPaginatedDocuments *paginatedDocs = [[nxuPaginatedDocuments alloc] initWithSession: session
+																				 pageSize: 50
+																		   queryStatement: queryStr
+																		  queryParameters: nil
+																		  completionBlock: handleSuccess
+																		  andFailureBlock: handleError];
+	
+	NUXRequest *request = [session requestQuery: queryStr];
+	[request addParameterValue:@"5" forKey:@"pageSize"];
 	
 	// ================================= handleResult
 	void (^handleResult)(NUXRequest *) = ^(NUXRequest *inRequest) {
 		NSError *error;
 		
-		NUXDocuments * docs = [inRequest responseEntityWithError:&error];
+		NUXDocuments *docs = [inRequest responseEntityWithError:&error];
+		
+		NSLog(@"%@", docs);
+		
 		if(error) {
 			NSLog(@"Error in [inRequest responseEntityWithError:&error]: %@", error);
 		} else {
@@ -82,15 +103,21 @@
 
 - (IBAction)refreshList:(id)sender {
 	
-	[self performQuery:@"SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain' and ecm:mixinType != 'Folderish'"];
+	[self performQuery:kDEFAULT_QUERY];
 }
 
+- (void) fetchMoreData
+{
+	
+}
+
+// ==================================================
 #pragma mark - Usual
+// ==================================================
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-	_objects = [[NSMutableArray alloc] init];
-	
+	_objects = [[NSMutableArray alloc] init];	
 }
 
 - (void)viewDidLoad
@@ -100,6 +127,7 @@
 	self.navigationItem.leftBarButtonItem = self.editButtonItem;
 	
 	[searchBar setDelegate:self];
+	searchBar.text = kDEFAULT_QUERY;
 }
 
 - (void)didReceiveMemoryWarning
@@ -108,7 +136,9 @@
     // Dispose of any resources that can be recreated.
 }
 
+// ==================================================
 #pragma mark - Add object(s)
+// ==================================================
 - (void) insertNewObjectsWithArray:(NSArray *)array andResetAll:(BOOL) needsReset
 {
 	if(needsReset) {
@@ -135,7 +165,9 @@
 	[self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
+// ==================================================
 #pragma mark - Table View
+// ==================================================
 
 // Later: better table view, not only the titles, but also icons, etc.
 - (void) setupCell: (UITableViewCell *)cell forDoc: (NUXDocument *) doc
@@ -207,7 +239,9 @@
 }
 
 
+// ==================================================
 #pragma  mark - Search Bar
+// ==================================================
 - (void) searchBarSearchButtonClicked:(UISearchBar *)theSearchBar
 {
 	[theSearchBar resignFirstResponder];

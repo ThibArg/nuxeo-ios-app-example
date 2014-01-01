@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0C92AF59C8424C64B53FFFCB /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5B0240A91034D3BAAE108FD /* libPods.a */; };
+		BB35BF1D18735EA300BB2F09 /* nxuPaginatedDocuments.m in Sources */ = {isa = PBXBuildFile; fileRef = BB35BF1C18735EA300BB2F09 /* nxuPaginatedDocuments.m */; };
 		BB4560521871CCB000E6A456 /* NUXDocuments+nxuNUXDocuments.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4560511871CCB000E6A456 /* NUXDocuments+nxuNUXDocuments.m */; };
 		BB45605518720F3700E6A456 /* NUXDocument+nxuNUXDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = BB45605418720F3700E6A456 /* NUXDocument+nxuNUXDocument.m */; };
 		BB8D49B11871028D00A14C6C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB8D49B01871028D00A14C6C /* Foundation.framework */; };
@@ -40,6 +41,8 @@
 
 /* Begin PBXFileReference section */
 		38F153A314314E60ACCEF031 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		BB35BF1B18735EA300BB2F09 /* nxuPaginatedDocuments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nxuPaginatedDocuments.h; sourceTree = "<group>"; };
+		BB35BF1C18735EA300BB2F09 /* nxuPaginatedDocuments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = nxuPaginatedDocuments.m; sourceTree = "<group>"; };
 		BB4560501871CCB000E6A456 /* NUXDocuments+nxuNUXDocuments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUXDocuments+nxuNUXDocuments.h"; sourceTree = "<group>"; };
 		BB4560511871CCB000E6A456 /* NUXDocuments+nxuNUXDocuments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NUXDocuments+nxuNUXDocuments.m"; sourceTree = "<group>"; };
 		BB45605318720F3700E6A456 /* NUXDocument+nxuNUXDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUXDocument+nxuNUXDocument.h"; sourceTree = "<group>"; };
@@ -102,6 +105,8 @@
 				BB4560511871CCB000E6A456 /* NUXDocuments+nxuNUXDocuments.m */,
 				BB45605318720F3700E6A456 /* NUXDocument+nxuNUXDocument.h */,
 				BB45605418720F3700E6A456 /* NUXDocument+nxuNUXDocument.m */,
+				BB35BF1B18735EA300BB2F09 /* nxuPaginatedDocuments.h */,
+				BB35BF1C18735EA300BB2F09 /* nxuPaginatedDocuments.m */,
 			);
 			name = NxUtils;
 			sourceTree = "<group>";
@@ -321,6 +326,7 @@
 				BB8D49C71871028D00A14C6C /* NBAMasterViewController.m in Sources */,
 				BB4560521871CCB000E6A456 /* NUXDocuments+nxuNUXDocuments.m in Sources */,
 				BB8D49C11871028D00A14C6C /* NBAAppDelegate.m in Sources */,
+				BB35BF1D18735EA300BB2F09 /* nxuPaginatedDocuments.m in Sources */,
 				BB8D49BD1871028D00A14C6C /* main.m in Sources */,
 				BB8D49CA1871028D00A14C6C /* NBADetailViewController.m in Sources */,
 				BB45605518720F3700E6A456 /* NUXDocument+nxuNUXDocument.m in Sources */,

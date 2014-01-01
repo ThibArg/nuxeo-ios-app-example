@@ -21,7 +21,7 @@
 	* Add the NSFastEnumeration protocol
 		So we can iterates directly:
 		for(NXDocument *doc in docs) ...
-		(see impleme ntation: we just wrap countByEnumeratingWithState:etc. and
+		(see implementation: we just wrap countByEnumeratingWithState:etc. and
 		 use the one from self.entries)
  */
 

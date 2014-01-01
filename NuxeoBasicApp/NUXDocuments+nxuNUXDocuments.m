@@ -27,7 +27,7 @@
 
 - (NSString *) description
 {
-	// Using mutable just to make the code a bit ore readable
+	// Using mutable just to make the code a bit more readable
 	NSMutableString *s = [NSMutableString stringWithFormat:@"%@", [super description]];
 	
 	[s appendFormat:@"\r isPaginable: %hhd", [self isPaginable]];
