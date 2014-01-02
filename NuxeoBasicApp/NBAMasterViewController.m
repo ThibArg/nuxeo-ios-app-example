@@ -17,10 +17,9 @@
 #import "NUXSession+requests.h"
 #import "NUXDocuments+nxuNUXDocuments.h"
 #import "nxuPaginatedDocuments.h"
-/*
+
 NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/ws/LotOfDocs' ORDER BY dc:title";
- */
-NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document ORDER BY dc:title";
+//NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document ORDER BY dc:title";
 // For testing
 NSString* const kTEST_SERVER_URL_LOCAL = @"http://localhost:8080/nuxeo";
 NSString* const kTEST_SERVER_URL_DEMO = @"http://demo.nuxeo.com/nuxeo";
@@ -28,11 +27,10 @@ NSString* const kTEST_LOGIN = @"Administrator";
 NSString* const kTEST_PASSWORD = @"Administrator";
 
 @interface NBAMasterViewController () {
-    NSMutableArray*			_objects;
+    NSMutableArray*				_objects;
+	nxuPaginatedDocuments*		_paginatedDocs;
 	
-	nxuPaginatedDocuments*	_paginatedDocs;
-	
-	__weak IBOutlet UISearchBar *searchBar;
+	__weak IBOutlet UISearchBar*	searchBar;
 }
 @end
 
@@ -62,7 +60,7 @@ NSString* const kTEST_PASSWORD = @"Administrator";
 	//NSLog(@"ICI REFRESH");
 	
 	// Setup the session and the request
-	NSURL *url = [[NSURL alloc] initWithString: kTEST_SERVER_URL_DEMO];
+	NSURL *url = [[NSURL alloc] initWithString: kTEST_SERVER_URL_LOCAL];
 	NUXSession *session = [[NUXSession alloc] initWithServerURL:url username:kTEST_LOGIN password:kTEST_PASSWORD];
 	[session addDefaultSchemas:@[@"dublincore"]];
 
@@ -159,7 +157,8 @@ NSString* const kTEST_PASSWORD = @"Administrator";
 // Later: better table view, not only the titles, but also icons, etc.
 - (void) setupCell: (UITableViewCell *)cell forDoc: (NUXDocument *) doc
 {
-	cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", doc.type, doc.title];
+	cell.textLabel.text = doc.title;
+	cell.detailTextLabel.text = doc.type;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
