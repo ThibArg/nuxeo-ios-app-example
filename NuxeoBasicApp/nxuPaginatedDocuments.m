@@ -13,133 +13,211 @@
 #import "NUXRequest.h"
 #import "NUXSession+requests.h"
 
+@implementation nxuPaginatedDocumentsError
+
++ (nxuPaginatedDocumentsError *) errorWithRequestStatus: (NSInteger) status
+										 requestMessage: (NSString *) message
+											   andError: (NSError *) error
+{
+	nxuPaginatedDocumentsError *err = [nxuPaginatedDocumentsError new];
+	err.requestStatusCode = status;
+	err.requestMessage = message;
+	err.error = error;
+	
+	return err;
+}
+
+@end
+
 @interface nxuPaginatedDocuments () {
-    NSInteger		_pageSize;
-	NSInteger		_currentPage;
-	NSString*		_queryStatement;
-	
-	NUXSession*		_session;
 	NUXRequest*		_request;
-	
-	nxuPaginatedDocumentsResponseBlock _completionBlock;
-	nxuPaginatedDocumentsResponseBlock _failureBlock;
-	
 	NUXDocuments*	_docs;
+	
+	nxuPaginatedDocumentsSuccessBlock _successBlock;
+	nxuPaginatedDocumentsErrorBlock _errorBlock;
+	
+	NSLock*			_lock;
 }
 @end
 
 @implementation nxuPaginatedDocuments
 
+// ==================================================
+#pragma mark - query
+// ==================================================
+- (void) performRequest
+{
+	if(_request) {
+		NSString *s = _request.parameters[@"currentPageIndex"];
+		NSLog(@"currentPageIndex: %@", s);
+	}
+	
+	// ----------------------------------------
+	if(![_lock tryLock]) {
+	// ----------------------------------------
+		NSError *error = [NSError errorWithDomain:kPaginatedDocumentsErrorDomain
+											 code:kERR_isBusy
+										 userInfo:@{NSLocalizedDescriptionKey: @"Cannot perform request",
+													NSLocalizedFailureReasonErrorKey: @"A request is already running"}];
+		
+		if(_errorBlock) {
+			_errorBlock( [nxuPaginatedDocumentsError errorWithRequestStatus:0
+															 requestMessage:@""
+																   andError:error] );
+		} else {
+			// Just nothing will happen. We don't want to
+			// raise an exception. Let just log the problem
+			NSLog(@"%@", error);
+		}
+	// ----------------------------------------
+	} else {
+	// ----------------------------------------
+		if(!_request || !_successBlock || !_errorBlock) {
+			NSString *reason;
+			if(!_request) {
+				reason = @"request";
+			} else if (!_successBlock) {
+				reason = @"successBlock";
+			} else {
+				reason = @"errorBlock";
+			}
+			
+			[_lock unlock];
+			@throw [NSException exceptionWithName: NSInvalidArgumentException
+										   reason: [NSString stringWithFormat:@"'%@' is nil", reason]
+										 userInfo: nil];
+		}
+				
+		// ================================= handleResult
+		void (^handleResult)(NUXRequest *) = ^(NUXRequest *inRequest) {
+			NSError *error;
+			
+			_docs = [inRequest responseEntityWithError:&error];
+			if(error) {
+				_errorBlock( [nxuPaginatedDocumentsError errorWithRequestStatus:0
+																 requestMessage:@""
+																	   andError:error] );
+			} else {
+				_successBlock(_docs.entries);
+			}
+			
+			[_lock unlock];
+		};
+		
+		// ================================= handleFailure
+		void (^handleFailure)(NUXRequest *) = ^(NUXRequest *inRequest) {
+			_errorBlock( [nxuPaginatedDocumentsError errorWithRequestStatus:[inRequest responseStatusCode]
+															 requestMessage:[inRequest responseString]
+																   andError:nil] );
+			[_lock unlock];
+		};
+		
+		[_request setCompletionBlock:handleResult];
+		[_request setFailureBlock:handleFailure];
+		[_request start];
+	}
+}
+
+// ==================================================
+#pragma mark - init/dealloc
+// ==================================================
 // init should not be called
 - (id) init
 {
 	@throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"-init is not a valid initializer for the class nxuPaginatedDocuments"
                                  userInfo:nil];
-	// Caller will crash
+	// Caller will crash. We expect that ;->
 	return nil;
 }
 
-- (id) initWithSession: (NUXSession *) session
-			  pageSize: (NSInteger) pageSize
-		queryStatement: (NSString *) statement
-	andQueryParameters: (NSDictionary *) queryParams
+- (id) initWithRequest: (NUXRequest *) request
+		  successBlock: (nxuPaginatedDocumentsSuccessBlock) blockSuccess
+	   andFailureBlock: (nxuPaginatedDocumentsErrorBlock) blockError
 {
 	self = [super init];
 	
 	if(self) {
-		_pageSize = pageSize;
-		_currentPage = 0;
-		_queryStatement = statement;
+		_reloadOnSamePage = YES;
+		_docs = nil;
 		
-		_session = session;
-				
-		if(queryParams){
-			for(NSString *key in queryParams) {
-				if([key isEqualToString:@"pageSize"]) {
-					NSInteger newPageSize = [ queryParams[key] integerValue ];
-					if(newPageSize > 0 && _pageSize <= 0) {
-						_pageSize = newPageSize;
-					}
-				} else {
-					[_request addParameterValue:queryParams[key] forKey:key];
-				}
-			}
-		}
-		// Add parameters now, so we're sure to override any existing one that could
-		// have been added while walking the queryParams dictionnary
-		[_request addParameterValue:[NSString stringWithFormat:@"%@", _queryStatement] forKey:@"query"];
-		[_request addParameterValue:[NSString stringWithFormat:@"%ld", (long)_pageSize] forKey:@"pageSize"];
+		_request = request;
+		_successBlock = blockSuccess;
+		_errorBlock = blockError;
 		
+		_lock = [NSLock new];
 	}
 	
 	return self;
 }
 
-- (void) setCompletionBlock: (nxuPaginatedDocumentsResponseBlock) block
+- (void) dealloc
 {
-	_completionBlock = block;
-}
-- (void) setFailureBlock: (nxuPaginatedDocumentsResponseBlock) block
-{
-	_failureBlock = block;
-}
-
-- (void) start
-{
-	// ================================= handleResult
-	void (^handleResult)(NUXRequest *) = ^(NUXRequest *inRequest) {
-		NSError *error;
-		
-		NUXDocuments *docs = [inRequest responseEntityWithError:&error];
-		
-		NSLog(@"%@", docs);
-		[A FINIR: passer d'aurtes params']
-		if(error) {
-			_failureBlock(error);
-		} else {
-			_completionBlock(self);
-		}
-	};
-	
-	// ================================= handleFailure
-	void (^handleFailure)(NUXRequest *) = ^(NUXRequest *inRequest) {
-		
-		NSLog(@"Request failed because of:\r        - Status code: %d\r        - Message: %@",
-			  [inRequest responseStatusCode],
-			  [inRequest responseString]);
-		
-		// With only the text included in the html of responseString:
-		NSString *html = [inRequest responseString];
-		NSAttributedString *s = [[NSAttributedString alloc] initWithData:[html dataUsingEncoding:NSUTF8StringEncoding]
-																 options:@{	NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
-																			NSCharacterEncodingDocumentAttribute:
-																				[NSNumber numberWithInt:NSUTF8StringEncoding]
-																			}
-													  documentAttributes:nil
-																   error:nil];
-		
-		NSLog(@"%@", [s string]);
-		
-	};
-	
-	[_request setCompletionBlock:handleResult];
-	[_request setFailureBlock:handleFailure];
-	[_request start];
+	_docs = nil;
+	_request = nil;
+	_successBlock = nil;
+	_errorBlock = nil;
+	_lock = nil;
 }
 
 
+// ==================================================
+#pragma mark - getters/setters
+// ==================================================
 - (NSInteger) pageSize
 {
-	return _pageSize;
+	return _docs.pageSize;
 }
-- (NSInteger) currentPage
+- (NSInteger) currentPageIndex
 {
-	return _currentPage;
+	return _docs.currentPageIndex;
 }
-- (NSString *) queryStatement
+
+- (void) setSuccessBlock:(nxuPaginatedDocumentsSuccessBlock) block
 {
-	return _queryStatement;
+	_successBlock = block;
+}
+
+- (void) setErrorBlock:(nxuPaginatedDocumentsErrorBlock) block
+{
+	_errorBlock = block;
+}
+
+// ==================================================
+#pragma mark - Navigation
+// ==================================================
+- (void) goToPage: (NSInteger) pageNum
+{
+	// _docs will be nil at the first call, we must check that
+	if(_docs && !_reloadOnSamePage && pageNum == _docs.currentPageIndex) {
+		// do nothing
+	} else {
+		[_request addParameterValue:[NSString stringWithFormat:@"%ld", (long)pageNum]
+							 forKey:@"currentPageIndex"];
+		[self performRequest];
+	}
+}
+
+- (void) goToPreviousPage
+{
+	[self goToPage: _docs.currentPageIndex - 1];
+}
+
+- (void) goToNextPage
+{
+	[self goToPage: _docs.currentPageIndex + 1];
+}
+
+- (void) goToLastPage
+{
+	[self goToPage:_docs.numberOfPages - 1];
+}
+
+- (void) goToFirstPage
+{
+	[self goToPage: 0];
 }
 
 @end
+
+// --EOF--

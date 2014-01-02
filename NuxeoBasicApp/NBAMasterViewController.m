@@ -18,10 +18,13 @@
 #import "NUXDocuments+nxuNUXDocuments.h"
 #import "nxuPaginatedDocuments.h"
 
-NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/ws/LotOfDocs'";
+NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/ws/LotOfDocs' ORDER BY dc:title";
 
 @interface NBAMasterViewController () {
-    NSMutableArray	*_objects;
+    NSMutableArray*			_objects;
+	
+	nxuPaginatedDocuments*	_paginatedDocs;
+	
 	__weak IBOutlet UISearchBar *searchBar;
 }
 @end
@@ -38,72 +41,46 @@ NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document WHERE ecm:path STARTSW
 	NSURL *url = [[NSURL alloc] initWithString:@"http://localhost:8080/nuxeo"];
 	NUXSession *session = [[NUXSession alloc] initWithServerURL:url username:@"Administrator" password:@"Administrator"];
 	[session addDefaultSchemas:@[@"dublincore"]];
-	
-	
-	void (^handleSuccess) (nxuPaginatedDocuments*) = ^(nxuPaginatedDocuments *pagedDocs) {
-		
-	};
-	void (^handleError) (nxuPaginatedDocuments*) = ^(nxuPaginatedDocuments *pagedDocs) {
-		
-	};
-	
-	nxuPaginatedDocuments *paginatedDocs = [[nxuPaginatedDocuments alloc] initWithSession: session
-																				 pageSize: 50
-																		   queryStatement: queryStr
-																		  queryParameters: nil
-																		  completionBlock: handleSuccess
-																		  andFailureBlock: handleError];
-	
+
 	NUXRequest *request = [session requestQuery: queryStr];
 	[request addParameterValue:@"5" forKey:@"pageSize"];
 	
-	// ================================= handleResult
-	void (^handleResult)(NUXRequest *) = ^(NUXRequest *inRequest) {
-		NSError *error;
-		
-		NUXDocuments *docs = [inRequest responseEntityWithError:&error];
-		
-		NSLog(@"%@", docs);
-		
-		if(error) {
-			NSLog(@"Error in [inRequest responseEntityWithError:&error]: %@", error);
-		} else {
-			[self insertNewObjectsWithArray: [docs entries]
-								andResetAll: YES];
-			
-		}
+	
+	// ================================= handleSuccess
+	void (^handleSuccess)(NSArray *) = ^(NSArray *entities) {
+		[self addNewObjectsWithArray: entities];
 	};
 	
 	// ================================= handleFailure
-	void (^handleFailure)(NUXRequest *) = ^(NUXRequest *inRequest) {
+	void (^handleError)(nxuPaginatedDocumentsError *) = ^(nxuPaginatedDocumentsError *error) {
 		
-		NSLog(@"Request failed because of:\r        - Status code: %d\r        - Message: %@",
-			  [inRequest responseStatusCode],
-			  [inRequest responseString]);
-		
-		// With only the text included in the html of responseString:
-		NSString *html = [inRequest responseString];
-		NSAttributedString *s = [[NSAttributedString alloc] initWithData:[html dataUsingEncoding:NSUTF8StringEncoding]
-																 options:@{	NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
-																			NSCharacterEncodingDocumentAttribute:
-																				[NSNumber numberWithInt:NSUTF8StringEncoding]
-																			}
-													  documentAttributes:nil
-																   error:nil];
-		
-		NSLog(@"%@", [s string]);
-		
+		NSLog(@"Request failed because of:\r        - Status code: %d\r        - Message: %@\r        - Error: %@",
+			  error.requestStatusCode,
+			  error.requestMessage,
+			  error.error);
 	};
 	
-	[request setCompletionBlock:handleResult];
-	[request setFailureBlock:handleFailure];
-	[request start];
+	// ================================= Finish setup
+	_paginatedDocs = [[nxuPaginatedDocuments alloc] initWithRequest:request
+													   successBlock:handleSuccess
+													andFailureBlock:handleError ];
+	_paginatedDocs.reloadOnSamePage = NO;
+	[_paginatedDocs goToPage:0];
 	
 }
 
+- (void) resetListAndPerformQuery: (NSString *) statement
+{
+	[_objects removeAllObjects];
+	[self performQuery: statement];
+}
+
+// ==================================================
+#pragma mark - actions
+// ==================================================
 - (IBAction)refreshList:(id)sender {
 	
-	[self performQuery:kDEFAULT_QUERY];
+	[self resetListAndPerformQuery: kDEFAULT_QUERY];
 }
 
 - (void) fetchMoreData
@@ -117,7 +94,8 @@ NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document WHERE ecm:path STARTSW
 - (void)awakeFromNib
 {
     [super awakeFromNib];
-	_objects = [[NSMutableArray alloc] init];	
+	_objects = [[NSMutableArray alloc] init];
+	_paginatedDocs = nil;
 }
 
 - (void)viewDidLoad
@@ -136,16 +114,22 @@ NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document WHERE ecm:path STARTSW
     // Dispose of any resources that can be recreated.
 }
 
+- (void) dealloc
+{
+	_objects = nil;
+	_paginatedDocs = nil;
+}
+
 // ==================================================
 #pragma mark - Add object(s)
 // ==================================================
-- (void) insertNewObjectsWithArray:(NSArray *)array andResetAll:(BOOL) needsReset
+- (void) addNewObjectsWithArray:(NSArray *)array
 {
+	/*
 	if(needsReset) {
-		NSLog(@"RESET");
 		[_objects removeAllObjects];
-		[self.tableView reloadData];
 	}
+	 */
 	[_objects addObjectsFromArray:array];
 	[self.tableView reloadData];
 }
@@ -245,12 +229,14 @@ NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document WHERE ecm:path STARTSW
 - (void) searchBarSearchButtonClicked:(UISearchBar *)theSearchBar
 {
 	[theSearchBar resignFirstResponder];
-	[self performQuery: [theSearchBar text]];
+	[self resetListAndPerformQuery: [theSearchBar text]];
 }
 
 - (void)searchBarBookmarkButtonClicked:(UISearchBar *)searchBar
 {
 	NSLog(@"oiuiouoi");
+	
+	[_paginatedDocs goToNextPage];
 }
 
 @end

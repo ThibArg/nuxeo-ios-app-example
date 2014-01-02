@@ -18,6 +18,10 @@ NSString* const kDCLastContributor = @"dc:lastContributor";
 
 - (BOOL) isEqual:(id)object
 {
+	if(self == object){
+		return YES;
+	}
+	
 	if(object && [object isKindOfClass:[NUXDocument class]]) {
 		return [self.uid isEqualToString:[(NUXDocument *)object uid]]
 			&& [self.changeToken isEqualToString:[(NUXDocument *)object changeToken]];
