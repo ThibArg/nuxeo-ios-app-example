@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "nxuPaginatedDocuments.h"
 
-@interface NBAMasterViewController : UITableViewController <UISearchBarDelegate>
+@interface NBAMasterViewController : UITableViewController <UISearchBarDelegate, nxuPaginatedDocuments>
 
 @end

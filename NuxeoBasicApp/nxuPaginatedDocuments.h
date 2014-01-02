@@ -111,24 +111,21 @@ typedef void (^nxuPaginatedDocumentsErrorBlock) (nxuPaginatedDocumentsError *err
  *					Do not modify the request while using
  *					the nxuPaginatedDocuments object
  *					*************************************
-*/
+ */
 - (id) initWithRequest: (NUXRequest *) request
-		  successBlock: (nxuPaginatedDocumentsSuccessBlock) blockSuccess
-	   andFailureBlock: (nxuPaginatedDocumentsErrorBlock) blockError;
+		   andDelegate: (id <nxuPaginatedDocuments>) theDelegate;
 
 /*	Setters for the callback blocks. Can be changed between 2 navigations (goTo...)
 	IMPORTANT MISSING FEATURE: protect change of callback while executing a request
 	=> be prepared for that by defining getters. We must also declare the getters
 	(can't define a setter without defining the getter, it's both or none)
  */
-- (void) setSuccessBlock:(nxuPaginatedDocumentsSuccessBlock) block;
-- (void) setErrorBlock:(nxuPaginatedDocumentsErrorBlock) block;
+- (void) setDelegate: (id <nxuPaginatedDocuments>) newDelegate;
 
 
 // Accessors. Actually, just wrappers to the NUXDocuments members
 // If no request has been run the
-- (NSInteger) pageSize;
-- (NSInteger) currentPageIndex;
+- (BOOL) hasMoreData; // means current page is not the last one
 
 /**	Navigation
  *

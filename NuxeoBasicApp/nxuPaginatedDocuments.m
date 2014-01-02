@@ -33,8 +33,7 @@
 	NUXRequest*		_request;
 	NUXDocuments*	_docs;
 	
-	nxuPaginatedDocumentsSuccessBlock _successBlock;
-	nxuPaginatedDocumentsErrorBlock _errorBlock;
+	id <nxuPaginatedDocuments> _delegate;
 	
 	NSLock*			_lock;
 }
@@ -60,26 +59,19 @@
 										 userInfo:@{NSLocalizedDescriptionKey: @"Cannot perform request",
 													NSLocalizedFailureReasonErrorKey: @"A request is already running"}];
 		
-		if(_errorBlock) {
-			_errorBlock( [nxuPaginatedDocumentsError errorWithRequestStatus:0
-															 requestMessage:@""
-																   andError:error] );
-		} else {
-			// Just nothing will happen. We don't want to
-			// raise an exception. Let just log the problem
-			NSLog(@"%@", error);
-		}
+		[_delegate paginatedDocumentsFailed:
+					 [nxuPaginatedDocumentsError errorWithRequestStatus: 0
+														 requestMessage: @""
+															   andError: error] ];
 	// ----------------------------------------
 	} else {
 	// ----------------------------------------
-		if(!_request || !_successBlock || !_errorBlock) {
+		if(!_request || !_delegate) {
 			NSString *reason;
 			if(!_request) {
 				reason = @"request";
-			} else if (!_successBlock) {
-				reason = @"successBlock";
 			} else {
-				reason = @"errorBlock";
+				reason = @"delegate";
 			}
 			
 			[_lock unlock];
@@ -88,17 +80,18 @@
 										 userInfo: nil];
 		}
 				
-		// ================================= handleResult
-		void (^handleResult)(NUXRequest *) = ^(NUXRequest *inRequest) {
+		// ================================= handleCompletion
+		void (^handleCompletion)(NUXRequest *) = ^(NUXRequest *inRequest) {
 			NSError *error;
 			
 			_docs = [inRequest responseEntityWithError:&error];
 			if(error) {
-				_errorBlock( [nxuPaginatedDocumentsError errorWithRequestStatus:0
-																 requestMessage:@""
-																	   andError:error] );
+				[_delegate paginatedDocumentsFailed:
+							 [nxuPaginatedDocumentsError errorWithRequestStatus: 0
+																 requestMessage: @""
+																	   andError: error] ];
 			} else {
-				_successBlock(_docs.entries);
+				[_delegate paginatedDocumentsSucceeded: _docs.entries];
 			}
 			
 			[_lock unlock];
@@ -106,13 +99,14 @@
 		
 		// ================================= handleFailure
 		void (^handleFailure)(NUXRequest *) = ^(NUXRequest *inRequest) {
-			_errorBlock( [nxuPaginatedDocumentsError errorWithRequestStatus:[inRequest responseStatusCode]
-															 requestMessage:[inRequest responseString]
-																   andError:nil] );
+			[_delegate paginatedDocumentsFailed:
+						 [nxuPaginatedDocumentsError errorWithRequestStatus: [inRequest responseStatusCode]
+															 requestMessage: [inRequest responseString]
+																   andError: nil] ];
 			[_lock unlock];
 		};
 		
-		[_request setCompletionBlock:handleResult];
+		[_request setCompletionBlock:handleCompletion];
 		[_request setFailureBlock:handleFailure];
 		[_request start];
 	}
@@ -132,8 +126,7 @@
 }
 
 - (id) initWithRequest: (NUXRequest *) request
-		  successBlock: (nxuPaginatedDocumentsSuccessBlock) blockSuccess
-	   andFailureBlock: (nxuPaginatedDocumentsErrorBlock) blockError
+		   andDelegate: (id) theDelegate
 {
 	self = [super init];
 	
@@ -142,8 +135,7 @@
 		_docs = nil;
 		
 		_request = request;
-		_successBlock = blockSuccess;
-		_errorBlock = blockError;
+		_delegate = theDelegate;
 		
 		_lock = [NSLock new];
 	}
@@ -155,8 +147,7 @@
 {
 	_docs = nil;
 	_request = nil;
-	_successBlock = nil;
-	_errorBlock = nil;
+	_delegate = nil;
 	_lock = nil;
 }
 
@@ -164,23 +155,14 @@
 // ==================================================
 #pragma mark - getters/setters
 // ==================================================
-- (NSInteger) pageSize
+- (BOOL) hasMoreData
 {
-	return _docs.pageSize;
-}
-- (NSInteger) currentPageIndex
-{
-	return _docs.currentPageIndex;
+	return _docs && _docs.currentPageIndex < (_docs.numberOfPages - 1);
 }
 
-- (void) setSuccessBlock:(nxuPaginatedDocumentsSuccessBlock) block
+- (void) setDelegate: (id <nxuPaginatedDocuments>) newDelegate
 {
-	_successBlock = block;
-}
-
-- (void) setErrorBlock:(nxuPaginatedDocumentsErrorBlock) block
-{
-	_errorBlock = block;
+	_delegate = newDelegate;
 }
 
 // ==================================================
