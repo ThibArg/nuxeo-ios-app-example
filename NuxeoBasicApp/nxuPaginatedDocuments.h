@@ -6,29 +6,45 @@
 //  Copyright (c) 2013 ThibArg. All rights reserved.
 //
 /*
-	// Setup URL and session
-	NSURL *url = [[NSURL alloc] initWithString:@"http://localhost:8080/nuxeo"];
-	NUXSession *session = [[NUXSession alloc] initWithServerURL:url username:@"Administrator" password:@"Administrator"];
-	[session addDefaultSchemas:@[@"dublincore"]];
- 
-	// Set up the callbacks (here, to make the call to initWithSession more readable)
-	void (^handleSuccess) (nxuPaginatedDocuments*) = ^(nxuPaginatedDocuments *pagedDocs) {
-		. . .
-	};
-	void (^handleError) (nxuPaginatedDocuments*) = ^(nxuPaginatedDocuments *pagedDocs) {
-		. . .
-	};
+	* Setup the callback, conforming to the nxuPaginatedDocuments protocol
+		- (void) paginatedDocumentsSucceeded: (NSArray *) entities
+		{
+			[self addNewObjectsWithArray: entities];
+		}
 
-	// Create the object
-	nxuPaginatedDocuments *paginatedDocs = [[nxuPaginatedDocuments alloc] initWithSession: session
-																			 pageSize: 50
-																	   queryStatement: queryStr
-																	  queryParameters: nil
-																	  completionBlock: handleSuccess
-																	  andFailureBlock: handleError];
-	 
-	// Do first query. Callbacks will be run
-	[paginatedDocs start];
+		- (void) paginatedDocumentsFailed: (nxuPaginatedDocumentsError *) error
+		{
+			NSLog(@"Request failed because of:\r- Status code: %d\r- Message: %@\r- Error: %@",
+				  error.requestStatusCode,
+				  error.requestMessage,
+				  error.error);
+		}
+ 
+	* Perform first query (_paginatedDocs is a variable of the class)
+		- (void) performQuery:(NSString*) queryStr
+		{
+			//NSLog(@"ICI REFRESH");
+			
+			// Setup the session and the request
+			NSURL *url = [[NSURL alloc] initWithString:@"http://localhost:8080/nuxeo"];
+			NUXSession *session = [[NUXSession alloc] initWithServerURL:url username:@"Administrator" password:@"Administrator"];
+			[session addDefaultSchemas:@[@"dublincore"]];
+
+			NUXRequest *request = [session requestQuery: queryStr];
+			[request addParameterValue:@"25" forKey:@"pageSize"];
+			
+			// Use nxuPaginatedDocuments
+			_paginatedDocs = [[nxuPaginatedDocuments alloc] initWithRequest: request
+																andDelegate: self ];
+			_paginatedDocs.reloadOnSamePage = NO;
+			[_paginatedDocs goToPage:0];
+			
+		}
+ 
+	* Later, navigate:
+		[_paginatedDocs goToNextPafe];
+	  or
+		[_paginatedDocs goToLastPage]
 
  */
 
