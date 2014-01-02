@@ -170,6 +170,33 @@
 	}
 }
 
+- (BOOL) isFirstDocumentOfPage: (NUXDocument *) doc
+{
+	return	doc && _docs && _docs.entries
+			&& [_docs.entries indexOfObject:doc] == 0;
+}
+
+- (BOOL) isLastDocumentOfPage: (NUXDocument *) doc
+{
+	return	doc && _docs && _docs.entries
+			&& [_docs.entries indexOfObject:doc] == [_docs.entries count] - 1;
+}
+
+- (BOOL) isFirstDocument: (NUXDocument *) doc
+{
+	return	doc && _docs && _docs.entries
+			&& _docs.currentPageIndex == 0
+			&& [_docs.entries indexOfObject:doc] == 0;
+}
+
+- (BOOL) isLastDocument: (NUXDocument *) doc
+{
+	NSLog(@"%ld - %ld", (long) _docs.currentPageIndex, (long) _docs.numberOfPages );
+	return	doc && _docs && _docs.entries
+			&& _docs.currentPageIndex == _docs.numberOfPages - 1
+			&& [_docs.entries indexOfObject:doc] == [_docs.entries count] - 1;;
+}
+
 // ==================================================
 #pragma mark - Navigation
 // ==================================================

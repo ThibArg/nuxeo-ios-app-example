@@ -49,6 +49,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "NUXDocument.h"
 #import "NUXSession.h"
 
 // ==================================================
@@ -134,9 +135,17 @@ typedef void (^nxuPaginatedDocumentsErrorBlock) (nxuPaginatedDocumentsError *err
 // Change the delegate if it makes sense
 - (void) setDelegate: (id <nxuPaginatedDocuments>) newDelegate;
 
-
 // Accessors
 - (BOOL) hasMoreData; // means current page is not the last one
+
+- (BOOL) isFirstDocumentOfPage: (NUXDocument *) doc;
+- (BOOL) isLastDocumentOfPage: (NUXDocument *) doc;
+
+// YES if we are on first page, and doc is the first of the page
+- (BOOL) isFirstDocument: (NUXDocument *) doc;
+// YES if we are on last page and doc is the last of the page
+- (BOOL) isLastDocument: (NUXDocument *) doc;
+
 
 /**	Navigation
  *

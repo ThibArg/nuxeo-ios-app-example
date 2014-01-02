@@ -8,12 +8,13 @@
 
 #import "NBADetailViewController.h"
 
-@interface NBADetailViewController ()
+@interface NBADetailViewController () {
 
-@property (strong, nonatomic) NUXDocument * currentDoc;
-@property (strong, nonatomic) NSArray * docList;
-@property NSUInteger indexCurrent;
-@property NSUInteger indexMax;
+	NUXDocument*			_currentDoc;
+	NSArray*				_docList;
+	NSUInteger				_indexCurrent;
+	NSUInteger				_indexMax;
+}
 
 @property (weak, nonatomic) IBOutlet UILabel *lb_title;
 @property (weak, nonatomic) IBOutlet UILabel *lb_created;
@@ -22,6 +23,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *lb_modifiedBy;
 @property (weak, nonatomic) IBOutlet UIButton *bNext;
 @property (weak, nonatomic) IBOutlet UIButton *bPrevious;
+
 
 - (void) configureView;
 - (void) goToNext;
@@ -41,6 +43,12 @@
 	
 	[self updateIndex];
 	[self configureView];
+}
+
+- (void) dealloc
+{
+	_currentDoc = nil;
+	_docList = nil;
 }
 
 - (void) updateIndex
@@ -84,7 +92,7 @@
 	self.bPrevious.enabled = YES;
 	self.bNext.enabled = YES;
 	
-	if(!self.currentDoc || _indexCurrent == NSNotFound) {
+	if(!_currentDoc || _indexCurrent == NSNotFound) {
 		self.bNext.enabled = NO;
 		self.bPrevious.enabled = NO;
 	} else if(_indexCurrent == 0) {
@@ -102,10 +110,10 @@
 
 - (void)configureView
 {
-	if (self.currentDoc) {
-		self.lb_title.text = self.currentDoc.title;
+	if (_currentDoc) {
+		self.lb_title.text = _currentDoc.title;
 		
-		NSDictionary *props = self.currentDoc.properties;
+		NSDictionary *props = _currentDoc.properties;
 		self.lb_created.text = props[kDCCreated];
 		self.lb_createdBy.text = props[kDCCreator];
 		self.lb_modified.text = props[kDCModified];
@@ -123,11 +131,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
 	[self updateIndex];
-	
-	NSLog(@"%@ -> %d", @"viewDidLoad",_indexCurrent);
-
 	[self configureView];
 }
 

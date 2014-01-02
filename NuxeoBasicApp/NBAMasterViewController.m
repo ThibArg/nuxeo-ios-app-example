@@ -126,11 +126,6 @@ NSString* const kTEST_PASSWORD = @"Administrator";
 // ==================================================
 - (void) addNewObjectsWithArray:(NSArray *)array
 {
-	/*
-	if(needsReset) {
-		[_objects removeAllObjects];
-	}
-	 */
 	[_objects addObjectsFromArray:array];
 	[self.tableView reloadData];
 }
@@ -217,7 +212,7 @@ NSString* const kTEST_PASSWORD = @"Administrator";
 {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-
+		
         [ [segue destinationViewController] displayDetails:_objects[indexPath.row]
 												   forList:_objects ];
     }
