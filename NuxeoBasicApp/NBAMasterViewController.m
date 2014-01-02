@@ -17,8 +17,15 @@
 #import "NUXSession+requests.h"
 #import "NUXDocuments+nxuNUXDocuments.h"
 #import "nxuPaginatedDocuments.h"
-
+/*
 NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/ws/LotOfDocs' ORDER BY dc:title";
+ */
+NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document ORDER BY dc:title";
+// For testing
+NSString* const kTEST_SERVER_URL_LOCAL = @"http://localhost:8080/nuxeo";
+NSString* const kTEST_SERVER_URL_DEMO = @"http://demo.nuxeo.com/nuxeo";
+NSString* const kTEST_LOGIN = @"Administrator";
+NSString* const kTEST_PASSWORD = @"Administrator";
 
 @interface NBAMasterViewController () {
     NSMutableArray*			_objects;
@@ -55,8 +62,8 @@ NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document WHERE ecm:path STARTSW
 	//NSLog(@"ICI REFRESH");
 	
 	// Setup the session and the request
-	NSURL *url = [[NSURL alloc] initWithString:@"http://localhost:8080/nuxeo"];
-	NUXSession *session = [[NUXSession alloc] initWithServerURL:url username:@"Administrator" password:@"Administrator"];
+	NSURL *url = [[NSURL alloc] initWithString: kTEST_SERVER_URL_DEMO];
+	NUXSession *session = [[NUXSession alloc] initWithServerURL:url username:kTEST_LOGIN password:kTEST_PASSWORD];
 	[session addDefaultSchemas:@[@"dublincore"]];
 
 	NUXRequest *request = [session requestQuery: queryStr];

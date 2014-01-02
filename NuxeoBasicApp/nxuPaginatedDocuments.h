@@ -131,16 +131,11 @@ typedef void (^nxuPaginatedDocumentsErrorBlock) (nxuPaginatedDocumentsError *err
 - (id) initWithRequest: (NUXRequest *) request
 		   andDelegate: (id <nxuPaginatedDocuments>) theDelegate;
 
-/*	Setters for the callback blocks. Can be changed between 2 navigations (goTo...)
-	IMPORTANT MISSING FEATURE: protect change of callback while executing a request
-	=> be prepared for that by defining getters. We must also declare the getters
-	(can't define a setter without defining the getter, it's both or none)
- */
+// Change the delegate if it makes sense
 - (void) setDelegate: (id <nxuPaginatedDocuments>) newDelegate;
 
 
-// Accessors. Actually, just wrappers to the NUXDocuments members
-// If no request has been run the
+// Accessors
 - (BOOL) hasMoreData; // means current page is not the last one
 
 /**	Navigation
@@ -148,20 +143,21 @@ typedef void (^nxuPaginatedDocumentsErrorBlock) (nxuPaginatedDocumentsError *err
  *	Each navigation method sends a new request (one exception: when the current
  *	page is re-requested. It then depends on the reloadOnSamePage property).
  *	This request is always asynchronous
- *		=> the only way to get its result is to use the block callbacks.
- *		=> The callback blocks *MUST* have been set prior to the call.
+ *		=> the only way to get its result is to use the delegate.
+ *		=> The delegate *MUST* have been set prior to the call.
  *
  *	Only one request can be run at a time (using a NSLock object).
  *		- If a navigation method is called while another one is running, then
- *		  the failureBlock with the following infos in the nxuError parameter:
+ *		  the paginatedDocumentsFailed method opf the delegate is called with
+ *		  the following infos in its nxuError parameter:
  *				requestStatusCode is 0 and requestMessage @""
  *				error will give informations in its localizedDescription and
  *				localizedFailureReason getters.
  *
- *		- Unlock is done in the callback blocks (successBlock and errorBlock)
- *		  *after* the blocks are executed.
+ *		- Unlock is done *after* the delegate was called to handle success or
+ *		  failure.
  *			=> Make sure they terminate normally. If they throws an exception,
- *				the nxuPaginatedDocuments will remain locked.
+ *			   the nxuPaginatedDocuments will remain locked.
  *
  *	Because Nuxeo realigns the "currentPageIndex" values, no specific check
  *	is done in all these accessors:
@@ -172,7 +168,7 @@ typedef void (^nxuPaginatedDocumentsErrorBlock) (nxuPaginatedDocumentsError *err
  */
 - (void) goToPage: (NSInteger) pageNum;
 
-/**	Usual navigation methods. They all call goToPage:
+/**	Classical navigation methods. They are wrappers around goToPage:
  */
 - (void) goToPreviousPage;
 - (void) goToNextPage;

@@ -13,6 +13,10 @@
 #import "NUXRequest.h"
 #import "NUXSession+requests.h"
 
+
+// ==================================================
+#pragma mark - nxuPaginatedDocumentsError
+// ==================================================
 @implementation nxuPaginatedDocumentsError
 
 + (nxuPaginatedDocumentsError *) errorWithRequestStatus: (NSInteger) status
@@ -29,6 +33,10 @@
 
 @end
 
+
+// ==================================================
+#pragma mark - nxuPaginatedDocuments
+// ==================================================
 @interface nxuPaginatedDocuments () {
 	NUXRequest*		_request;
 	NUXDocuments*	_docs;
@@ -46,11 +54,6 @@
 // ==================================================
 - (void) performRequest
 {
-	if(_request) {
-		NSString *s = _request.parameters[@"currentPageIndex"];
-		NSLog(@"currentPageIndex: %@", s);
-	}
-	
 	// ----------------------------------------
 	if(![_lock tryLock]) {
 	// ----------------------------------------
@@ -162,7 +165,9 @@
 
 - (void) setDelegate: (id <nxuPaginatedDocuments>) newDelegate
 {
-	_delegate = newDelegate;
+	if(newDelegate != _delegate) {
+		_delegate = newDelegate;
+	}
 }
 
 // ==================================================
