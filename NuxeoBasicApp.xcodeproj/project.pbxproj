@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0C92AF59C8424C64B53FFFCB /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5B0240A91034D3BAAE108FD /* libPods.a */; };
 		BB35BF1D18735EA300BB2F09 /* nxuPaginatedDocuments.m in Sources */ = {isa = PBXBuildFile; fileRef = BB35BF1C18735EA300BB2F09 /* nxuPaginatedDocuments.m */; };
+		BB42C7D81875D08700613189 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = BB42C7D71875D08700613189 /* README.md */; };
 		BB4560521871CCB000E6A456 /* NUXDocuments+nxuNUXDocuments.m in Sources */ = {isa = PBXBuildFile; fileRef = BB4560511871CCB000E6A456 /* NUXDocuments+nxuNUXDocuments.m */; };
 		BB45605518720F3700E6A456 /* NUXDocument+nxuNUXDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = BB45605418720F3700E6A456 /* NUXDocument+nxuNUXDocument.m */; };
 		BB8D49B11871028D00A14C6C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB8D49B01871028D00A14C6C /* Foundation.framework */; };
@@ -43,6 +44,7 @@
 		38F153A314314E60ACCEF031 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		BB35BF1B18735EA300BB2F09 /* nxuPaginatedDocuments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nxuPaginatedDocuments.h; sourceTree = "<group>"; };
 		BB35BF1C18735EA300BB2F09 /* nxuPaginatedDocuments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = nxuPaginatedDocuments.m; sourceTree = "<group>"; };
+		BB42C7D71875D08700613189 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		BB4560501871CCB000E6A456 /* NUXDocuments+nxuNUXDocuments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUXDocuments+nxuNUXDocuments.h"; sourceTree = "<group>"; };
 		BB4560511871CCB000E6A456 /* NUXDocuments+nxuNUXDocuments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NUXDocuments+nxuNUXDocuments.m"; sourceTree = "<group>"; };
 		BB45605318720F3700E6A456 /* NUXDocument+nxuNUXDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NUXDocument+nxuNUXDocument.h"; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 		BB8D49A41871028D00A14C6C = {
 			isa = PBXGroup;
 			children = (
+				BB42C7D71875D08700613189 /* README.md */,
 				BB8D49B61871028D00A14C6C /* NuxeoBasicApp */,
 				BB8D49D81871028D00A14C6C /* NuxeoBasicAppTests */,
 				BB8D49AF1871028D00A14C6C /* Frameworks */,
@@ -271,6 +274,7 @@
 			files = (
 				BB8D49CC1871028D00A14C6C /* Images.xcassets in Resources */,
 				BB8D49BB1871028D00A14C6C /* InfoPlist.strings in Resources */,
+				BB42C7D81875D08700613189 /* README.md in Resources */,
 				BB8D49C41871028D00A14C6C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

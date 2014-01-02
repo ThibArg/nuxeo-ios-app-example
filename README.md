@@ -5,7 +5,25 @@ Learning how to use nuxeo-ios-sdk, extending it, etc.
 
 The SDK was imported following instruction found [here](http://doc.nuxeo.com/x/2Ir1) which means you have to open the workspace (not the project), because of the use of CocoaPods.
 
-As of "today", what was added to the sdk:
+####The application does the following:
+
+* Connects to localhost:8080/nuxeo, with the usual Administrator/Administrator credentials
+
+* Displays a "refresh" button which gets all the documents in a specific (hard-coded) folder
+
+* Displays a search bar, wher the user can enter a NXQL expression
+
+* Pagination is set to 25. When the user scrolls down, a new page is fetched and its data added to the list
+
+* When an item in the list is touched:
+	* The app displays details: Just basic dublincore infos.
+	* Previous/Next buttons allow navigation in the list
+
+* (not yet a crazy flashy interface ;-))
+
+ 
+
+####As of "today", what was added to the sdk:
 
 * Category `nxuDocument` (NUXDocument+nxuNUXDocument.h and .m)
     * `isEqual` compares 2 documents. Mainly used in an `NSArray` of `NUXDocument`, to find one `NUXDocument` in the array
@@ -57,5 +75,4 @@ _paginatedDocs.reloadOnSamePage = NO;
  Later, go to a different page:
 
 `[_paginatedDocs goToNextPage];`
-
 
