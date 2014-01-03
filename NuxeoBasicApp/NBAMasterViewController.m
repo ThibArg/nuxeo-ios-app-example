@@ -31,6 +31,7 @@ NSString* const kTEST_PASSWORD = @"Administrator";
 	nxuPaginatedDocuments*		_paginatedDocs;
 	
 	__weak IBOutlet UISearchBar*	searchBar;
+
 }
 @end
 
@@ -46,8 +47,8 @@ NSString* const kTEST_PASSWORD = @"Administrator";
 
 - (void) paginatedDocumentsFailed: (nxuPaginatedDocumentsError *) error
 {
-	NSLog(@"Request failed because of:\r- Status code: %d\r- Message: %@\r- Error: %@",
-		  error.requestStatusCode,
+	NSLog(@"Request failed because of:\r- Status code: %ld\r- Message: %@\r- Error: %@",
+		  (long)error.requestStatusCode,
 		  error.requestMessage,
 		  error.error);
 }
@@ -57,22 +58,21 @@ NSString* const kTEST_PASSWORD = @"Administrator";
 // ==================================================
 - (void) performQuery:(NSString*) queryStr
 {
-	//NSLog(@"ICI REFRESH");
-	
-	// Setup the session and the request
-	NSURL *url = [[NSURL alloc] initWithString: kTEST_SERVER_URL_LOCAL];
-	NUXSession *session = [[NUXSession alloc] initWithServerURL:url username:kTEST_LOGIN password:kTEST_PASSWORD];
-	[session addDefaultSchemas:@[@"dublincore"]];
-
-	NUXRequest *request = [session requestQuery: queryStr];
-	[request addParameterValue:@"25" forKey:@"pageSize"];
-	
-	// Use nxuPaginatedDocuments
-	_paginatedDocs = [[nxuPaginatedDocuments alloc] initWithRequest: request
-														andDelegate: self ];
-	_paginatedDocs.reloadOnSamePage = NO;
+	// Use nxuPaginatedDocuments. No need to create a new one for each query
+	if(!_paginatedDocs) {
+		// Setup the session and the request
+		NSURL *url = [[NSURL alloc] initWithString: kTEST_SERVER_URL_LOCAL];
+		NUXSession *session = [[NUXSession alloc] initWithServerURL:url username:kTEST_LOGIN password:kTEST_PASSWORD];
+		[session addDefaultSchemas:@[@"dublincore"]];
+		
+		NUXRequest *request = [session requestQuery: queryStr];
+		[request addParameterValue:@"25" forKey:@"pageSize"];
+		
+		_paginatedDocs = [[nxuPaginatedDocuments alloc] initWithRequest: request
+															andDelegate: self ];
+		_paginatedDocs.reloadOnSamePage = YES;
+	}
 	[_paginatedDocs goToPage:0];
-	
 }
 
 - (void) resetListAndPerformQuery: (NSString *) statement
@@ -86,7 +86,7 @@ NSString* const kTEST_PASSWORD = @"Administrator";
 // ==================================================
 - (IBAction)refreshList:(id)sender {
 	
-	[self resetListAndPerformQuery: kDEFAULT_QUERY];
+	[self resetListAndPerformQuery: searchBar.text];
 }
 
 // ==================================================
@@ -170,7 +170,11 @@ NSString* const kTEST_PASSWORD = @"Administrator";
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
 	
-	[self setupCell:cell forDoc:_objects[indexPath.row]];
+	if(_objects && indexPath.row < _objects.count) {
+		[self setupCell:cell forDoc:_objects[indexPath.row]];
+	} else {
+		NSLog(@"cellForRowAtIndexPath has a problem. _objects : %@, count: %lu. For row #%d", !_objects ? @"nil" : @"not nil", (unsigned long)(_objects ? _objects.count : 0), indexPath.row);
+	}
 
     return cell;
 }
@@ -235,6 +239,12 @@ NSString* const kTEST_PASSWORD = @"Administrator";
 - (void) searchBarSearchButtonClicked:(UISearchBar *)theSearchBar
 {
 	[theSearchBar resignFirstResponder];
+	
+	// Query statement changes => we need a new _paginatedDocs.
+	// This could be optimized, comparing new statement with previous one, but
+	// It's not easy to extract the info from NUXRequest (not complicated, but
+	// not one line such as setting _paginatedDocs to nil ;->)
+	_paginatedDocs = nil;
 	[self resetListAndPerformQuery: [theSearchBar text]];
 }
 
