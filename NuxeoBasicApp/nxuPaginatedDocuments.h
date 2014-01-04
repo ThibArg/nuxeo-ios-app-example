@@ -49,8 +49,10 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "NUXDocument.h"
+
 #import "NUXSession.h"
+#import "NUXDocument.h"
+#import "NUXDocuments.h"
 
 // ==================================================
 #pragma mark - nxuError

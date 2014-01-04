@@ -8,12 +8,6 @@
 
 #import "nxuPaginatedDocuments.h"
 
-#import "NUXDocuments.h"
-#import "NUXSession.h"
-#import "NUXRequest.h"
-#import "NUXSession+requests.h"
-
-
 // ==================================================
 #pragma mark - nxuPaginatedDocumentsError
 // ==================================================

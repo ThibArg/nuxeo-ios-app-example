@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 ThibArg. All rights reserved.
 //
 
-#import "NUXJSONSerializer.h"
+#import <NUXJSONSerializer.h>
 #import "NUXDocuments+nxuNUXDocuments.h"
 
 @implementation NUXDocuments (nxuNUXDocuments)

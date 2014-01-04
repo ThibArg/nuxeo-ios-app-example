@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "NUXDocument+nxuNUXDocument.h"
-#import "NUXDocuments+nxuNUXDocuments.h"
 
 @interface NBADetailViewController : UIViewController
 

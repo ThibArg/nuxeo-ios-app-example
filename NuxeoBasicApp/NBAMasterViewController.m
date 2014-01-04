@@ -7,16 +7,9 @@
 //
 
 #import "NBAMasterViewController.h"
-
 #import "NBADetailViewController.h"
 
-#import "NUXSession.h"
-#import "NUXDocument.h"
-#import "NUXDocuments.h"
-#import "NUXRequest.h"
 #import "NUXSession+requests.h"
-#import "NUXDocuments+nxuNUXDocuments.h"
-#import "nxuPaginatedDocuments.h"
 
 NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document WHERE ecm:path STARTSWITH '/default-domain/workspaces/ws/LotOfDocs' ORDER BY dc:title";
 //NSString* const kDEFAULT_QUERY = @"SELECT * FROM Document ORDER BY dc:title";
