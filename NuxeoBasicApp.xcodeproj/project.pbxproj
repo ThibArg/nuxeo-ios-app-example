@@ -26,7 +26,6 @@
 		BB8D49D41871028D00A14C6C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB8D49B01871028D00A14C6C /* Foundation.framework */; };
 		BB8D49D51871028D00A14C6C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB8D49B41871028D00A14C6C /* UIKit.framework */; };
 		BB8D49DD1871028D00A14C6C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BB8D49DB1871028D00A14C6C /* InfoPlist.strings */; };
-		BB8D49DF1871028D00A14C6C /* NuxeoBasicAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BB8D49DE1871028D00A14C6C /* NuxeoBasicAppTests.m */; };
 		BB8D49E9187103F000A14C6C /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BB8D49E8187103F000A14C6C /* libsqlite3.0.dylib */; };
 /* End PBXBuildFile section */
 
@@ -69,7 +68,6 @@
 		BB8D49D21871028D00A14C6C /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		BB8D49DA1871028D00A14C6C /* NuxeoBasicAppTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NuxeoBasicAppTests-Info.plist"; sourceTree = "<group>"; };
 		BB8D49DC1871028D00A14C6C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		BB8D49DE1871028D00A14C6C /* NuxeoBasicAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NuxeoBasicAppTests.m; sourceTree = "<group>"; };
 		BB8D49E8187103F000A14C6C /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		D5B0240A91034D3BAAE108FD /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -178,7 +176,6 @@
 		BB8D49D81871028D00A14C6C /* NuxeoBasicAppTests */ = {
 			isa = PBXGroup;
 			children = (
-				BB8D49DE1871028D00A14C6C /* NuxeoBasicAppTests.m */,
 				BB8D49D91871028D00A14C6C /* Supporting Files */,
 			);
 			path = NuxeoBasicAppTests;
@@ -341,7 +338,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB8D49DF1871028D00A14C6C /* NuxeoBasicAppTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
