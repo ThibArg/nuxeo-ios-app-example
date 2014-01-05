@@ -34,8 +34,8 @@
 			[request addParameterValue:@"25" forKey:@"pageSize"];
 			
 			// Use nxuPaginatedDocuments
-			_paginatedDocs = [[nxuPaginatedDocuments alloc] initWithRequest: request
-																andDelegate: self ];
+			_paginatedDocs = [nxuPaginatedDocuments paginatedDocumentsWithRequest:request
+																	  andDelegate:self];
 			_paginatedDocs.reloadOnSamePage = NO;
 			[_paginatedDocs goToPage:0];
 			
@@ -111,7 +111,7 @@ typedef void (^nxuPaginatedDocumentsErrorBlock) (nxuPaginatedDocumentsError *err
 // Default value is YES
 @property BOOL reloadOnSamePage;
 
-/**	initWithRequest:successBlock:andFailureBlock
+/**	Class method paginatedDocumentsWithRequest:andDelegate
  *
  *	The request should not be modified by the caller after creating
  *	this nxuPaginatedDocuments object and until you have finish working
@@ -130,9 +130,13 @@ typedef void (^nxuPaginatedDocumentsErrorBlock) (nxuPaginatedDocumentsError *err
  *					Do not modify the request while using
  *					the nxuPaginatedDocuments object
  *					*************************************
+ *
+ *	theDelegate
+ *		Used for the success/failure callback.
+ *		Must conform to the nxuPaginatedDocuments protocol
  */
-- (id) initWithRequest: (NUXRequest *) request
-		   andDelegate: (id <nxuPaginatedDocuments>) theDelegate;
++ (nxuPaginatedDocuments *) paginatedDocumentsWithRequest: (NUXRequest *) request
+											  andDelegate: (id <nxuPaginatedDocuments>) theDelegate;
 
 // Change the delegate if it makes sense
 - (void) setDelegate: (id <nxuPaginatedDocuments>) newDelegate;

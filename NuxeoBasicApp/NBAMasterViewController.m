@@ -61,8 +61,8 @@ NSString* const kTEST_PASSWORD = @"Administrator";
 		NUXRequest *request = [session requestQuery: queryStr];
 		[request addParameterValue:@"25" forKey:@"pageSize"];
 		
-		_paginatedDocs = [[nxuPaginatedDocuments alloc] initWithRequest: request
-															andDelegate: self ];
+		_paginatedDocs = [nxuPaginatedDocuments paginatedDocumentsWithRequest:request
+																  andDelegate:self];
 		_paginatedDocs.reloadOnSamePage = YES;
 	}
 	[_paginatedDocs goToPage:0];

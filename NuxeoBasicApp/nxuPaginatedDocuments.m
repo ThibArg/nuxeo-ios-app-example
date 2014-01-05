@@ -112,6 +112,20 @@
 // ==================================================
 #pragma mark - init/dealloc
 // ==================================================
++ (nxuPaginatedDocuments *) paginatedDocumentsWithRequest: (NUXRequest *) request
+											  andDelegate: (id <nxuPaginatedDocuments>) theDelegate
+{
+	nxuPaginatedDocuments *paginatedDocs;
+	
+	paginatedDocs = [nxuPaginatedDocuments alloc];
+	
+	if(paginatedDocs) {
+		paginatedDocs = [paginatedDocs initWithRequest:request
+										   andDelegate:theDelegate];
+	}
+	return paginatedDocs;
+}
+
 // init should not be called
 - (id) init
 {
@@ -122,6 +136,7 @@
 	return nil;
 }
 
+// Private init, not exposed in the header
 - (id) initWithRequest: (NUXRequest *) request
 		   andDelegate: (id) theDelegate
 {
