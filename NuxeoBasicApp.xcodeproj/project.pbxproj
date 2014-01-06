@@ -27,6 +27,8 @@
 		BB8D49D51871028D00A14C6C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB8D49B41871028D00A14C6C /* UIKit.framework */; };
 		BB8D49DD1871028D00A14C6C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BB8D49DB1871028D00A14C6C /* InfoPlist.strings */; };
 		BB8D49E9187103F000A14C6C /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BB8D49E8187103F000A14C6C /* libsqlite3.0.dylib */; };
+		BBCE4BC0187A301A00BC6C76 /* NxUtilsTestBase.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCE4BBF187A301A00BC6C76 /* NxUtilsTestBase.m */; };
+		BBCE4BC3187A31DC00BC6C76 /* nxuPaginatedDocumentsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCE4BC2187A31DC00BC6C76 /* nxuPaginatedDocumentsTests.m */; };
 		BBD95962187917AA0087378E /* NuxeoBasicAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD95961187917AA0087378E /* NuxeoBasicAppTests.m */; };
 /* End PBXBuildFile section */
 
@@ -70,6 +72,9 @@
 		BB8D49DA1871028D00A14C6C /* NuxeoBasicAppTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NuxeoBasicAppTests-Info.plist"; sourceTree = "<group>"; };
 		BB8D49DC1871028D00A14C6C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		BB8D49E8187103F000A14C6C /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
+		BBCE4BBF187A301A00BC6C76 /* NxUtilsTestBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NxUtilsTestBase.m; sourceTree = "<group>"; };
+		BBCE4BC1187A303900BC6C76 /* NxUtilsTestBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NxUtilsTestBase.h; sourceTree = "<group>"; };
+		BBCE4BC2187A31DC00BC6C76 /* nxuPaginatedDocumentsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = nxuPaginatedDocumentsTests.m; sourceTree = "<group>"; };
 		BBD95961187917AA0087378E /* NuxeoBasicAppTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NuxeoBasicAppTests.m; sourceTree = "<group>"; };
 		D5B0240A91034D3BAAE108FD /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -178,6 +183,9 @@
 		BB8D49D81871028D00A14C6C /* NuxeoBasicAppTests */ = {
 			isa = PBXGroup;
 			children = (
+				BBCE4BC1187A303900BC6C76 /* NxUtilsTestBase.h */,
+				BBCE4BBF187A301A00BC6C76 /* NxUtilsTestBase.m */,
+				BBCE4BC2187A31DC00BC6C76 /* nxuPaginatedDocumentsTests.m */,
 				BB8D49D91871028D00A14C6C /* Supporting Files */,
 				BBD95961187917AA0087378E /* NuxeoBasicAppTests.m */,
 			);
@@ -341,6 +349,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBCE4BC3187A31DC00BC6C76 /* nxuPaginatedDocumentsTests.m in Sources */,
+				BBCE4BC0187A301A00BC6C76 /* NxUtilsTestBase.m in Sources */,
 				BBD95962187917AA0087378E /* NuxeoBasicAppTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

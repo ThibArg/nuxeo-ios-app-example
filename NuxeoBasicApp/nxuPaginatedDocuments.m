@@ -167,6 +167,11 @@
 // ==================================================
 #pragma mark - getters/setters
 // ==================================================
+- (NSInteger) pageSize
+{
+	return _docs ? _docs.pageSize : -1;
+}
+
 - (BOOL) hasMoreData
 {
 	return _docs && _docs.currentPageIndex < (_docs.numberOfPages - 1);

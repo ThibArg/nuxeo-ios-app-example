@@ -142,6 +142,7 @@ typedef void (^nxuPaginatedDocumentsErrorBlock) (nxuPaginatedDocumentsError *err
 - (void) setDelegate: (id <nxuPaginatedDocuments>) newDelegate;
 
 // Accessors
+- (NSInteger) pageSize;
 - (BOOL) hasMoreData; // means current page is not the last one
 
 - (BOOL) isFirstDocumentOfPage: (NUXDocument *) doc;
